@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocaTools - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for stats -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-50">
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar shadow-sm z-50">
+            <div class="mb-8 px-2 flex items-center gap-2 text-primary font-bold text-xl">
+                <i class="uil uil-wrench"></i> LocaTools Admin
+            </div>
+
+            <nav class="flex-1">
+                <a href="#" class="sidebar-link active" data-tab="overview">
+                    <i class="uil uil-tachometer-fast-alt text-lg"></i> Visão Geral
+                </a>
+                <a href="#" class="sidebar-link" data-tab="rentals">
+                    <i class="uil uil-calendar-alt text-lg"></i> Aluguéis
+                </a>
+                <a href="#" class="sidebar-link" data-tab="tools">
+                    <i class="uil uil-drill text-lg"></i> Ferramentas
+                </a>
+                <a href="#" class="sidebar-link" data-tab="settings">
+                    <i class="uil uil-setting text-lg"></i> Configurações
+                </a>
+            </nav>
+
+            <div class="border-t border-gray-200 pt-4">
+                <button id="logout-btn" class="sidebar-link w-full text-red-500 hover:bg-red-50 hover:text-red-600">
+                    <i class="uil uil-signout"></i> Sair
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar (Mobile Trigger could go here) -->
+            <header class="flex justify-between items-center mb-8">
+                <h2 id="page-title" class="text-2xl font-bold text-gray-800">Visão Geral</h2>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-500">Logado como Admin</span>
+                    <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">A
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div id="content-area" class="fade-in">
+                <!-- Content injected via JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals (Hidden by default) -->
+
+    <!-- Tool Modal -->
+    <div id="tool-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold" id="tool-modal-title">Nova Ferramenta</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600"><i
+                        class="uil uil-times text-xl"></i></button>
+            </div>
+            <form id="tool-form" class="space-y-4">
+                <input type="hidden" id="tool-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome</label>
+                    <input type="text" id="tool-name" class="input" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Categoria</label>
+                    <select id="tool-category" class="input" required>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Preço Diária (R$)</label>
+                    <input type="number" id="tool-price" class="input" steps="0.01" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Estoque</label>
+                    <input type="number" id="tool-stock" class="input" value="1" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Imagem</label>
+                    <input type="file" id="tool-image-file" class="input" accept="image/*">
+                    <input type="hidden" id="tool-image-url">
+                    <p class="text-xs text-muted mt-1">Deixe vazio para manter a atual (na edição).</p>
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" class="btn btn-outline close-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rental Detail Modal -->
+    <div id="rental-modal" class="modal-overlay">
+        <div class="modal max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Detalhes do Aluguel</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600"><i
+                        class="uil uil-times text-xl"></i></button>
+            </div>
+            <div id="rental-detail-content">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/rentals.js"></script>
+    <script type="module" src="js/messages.js"></script>
+</body>
+
+</html>

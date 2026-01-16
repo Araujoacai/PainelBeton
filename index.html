@@ -3,1139 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Aluguel de Ferramentas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Aluguel de Ferramentas - Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .nav-button.active {
-            background-color: #2563eb; /* bg-blue-600 */
-            color: #ffffff;
-        }
-        .modal {
-            transition: opacity 0.3s ease;
-        }
-        .toast {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-            transform: translateY(100%);
-            opacity: 0;
-        }
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        /* Scrollbar customizada para webkit */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1f2937; /* bg-gray-800 */
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563; /* bg-gray-600 */
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280; /* bg-gray-500 */
-        }
-        aside {
-            transition: transform 0.3s ease-in-out;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Unicons for icons -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind for utility classes compatibility if needed, but styling is mainly in styles.css -->
 </head>
-<body class="bg-gray-900 text-gray-300">
+<body>
 
-    <div class="relative min-h-screen md:flex">
-        <!-- Overlay para menu mobile -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
-        
-        <!-- Navegação Lateral -->
-        <aside id="sidebar" class="w-64 bg-gray-800 p-4 flex flex-col fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 z-30">
-            <div class="flex items-center justify-between mb-8">
-                <div class="flex items-center">
-                    <i class="fa-solid fa-helmet-safety text-3xl text-blue-500 mr-3"></i>
-                    <h1 class="text-xl font-bold text-white">RentalSys</h1>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container flex justify-between items-center">
+            <a href="/" class="nav-brand">
+                <i class="uil uil-wrench text-primary text-2xl"></i>
+                <span>LocaTools</span>
+            </a>
+            
+            <div class="flex items-center gap-4">
+                <button class="btn btn-outline relative" id="cart-btn">
+                    <i class="uil uil-shopping-cart text-xl"></i>
+                    <span id="cart-count" class="badge badge-danger" style="position: absolute; top: -5px; right: -5px; padding: 2px 6px; font-size: 10px;">0</span>
+                </button>
+                <a href="/login.html" class="text-muted hover:text-primary">
+                    <i class="uil uil-lock text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-white border-b border-gray-200 py-12">
+        <div class="container text-center">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Ferramentas Profissionais para seu Projeto</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Alugue equipamentos de alta qualidade de forma rápida, simples e sem burocracia.</p>
+        </div>
+    </header>
+
+    <!-- Filters & Search -->
+    <section class="py-8 bg-gray-50 sticky top-[70px] z-40 border-b border-gray-200 shadow-sm">
+        <div class="container">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+                <!-- Categories -->
+                <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="categories-container">
+                    <button class="btn btn-primary category-filter active" data-id="all">Todos</button>
+                    <!-- Categories injected by JS -->
                 </div>
-                 <button id="close-sidebar-btn" class="md:hidden text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-times text-xl"></i>
-                </button>
-            </div>
-            <nav class="flex flex-col space-y-2">
-                <button onclick="switchTab('rentals')" class="nav-button active flex items-center p-3 rounded-lg text-left text-gray-300 hover:bg-gray-700 transition-colors">
-                    <i class="fa-solid fa-calendar-days w-6 mr-3"></i>Aluguéis Ativos
-                </button>
-                <button onclick="switchTab('history')" class="nav-button flex items-center p-3 rounded-lg text-left text-gray-300 hover:bg-gray-700 transition-colors">
-                    <i class="fa-solid fa-history w-6 mr-3"></i>Histórico
-                </button>
-                 <button onclick="switchTab('reports')" class="nav-button flex items-center p-3 rounded-lg text-left text-gray-300 hover:bg-gray-700 transition-colors">
-                    <i class="fa-solid fa-chart-line w-6 mr-3"></i>Relatórios
-                </button>
-                <button onclick="switchTab('clients')" class="nav-button flex items-center p-3 rounded-lg text-left text-gray-300 hover:bg-gray-700 transition-colors">
-                    <i class="fa-solid fa-users w-6 mr-3"></i>Clientes
-                </button>
-                <button onclick="switchTab('tools')" class="nav-button flex items-center p-3 rounded-lg text-left text-gray-300 hover:bg-gray-700 transition-colors">
-                    <i class="fa-solid fa-screwdriver-wrench w-6 mr-3"></i>Ferramentas
-                </button>
-            </nav>
-            <div class="mt-auto text-center text-xs text-gray-500">
-                <p>Painel de Gerenciamento v3.2</p>
-                <p class="mt-1 truncate">ID: <span id="user-id-display">Carregando...</span></p>
-            </div>
-        </aside>
 
-        <!-- Conteúdo Principal -->
-        <div class="flex-1 flex flex-col">
-             <!-- Header Mobile -->
-            <header class="md:hidden bg-gray-800 p-4 flex justify-between items-center sticky top-0 z-10">
-                <button id="open-sidebar-btn" class="text-white">
-                    <i class="fa-solid fa-bars text-2xl"></i>
-                </button>
-                <h1 class="text-lg font-bold text-white">RentalSys</h1>
-                <div></div> <!-- Spacer -->
-            </header>
+                <!-- Search -->
+                <div class="w-full md:w-1/3 relative">
+                    <i class="uil uil-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="search-input" class="input pl-10" placeholder="Buscar ferramenta...">
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <main class="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 overflow-y-auto">
-                <!-- Aba de Aluguéis -->
-                <div id="rentals-tab" class="space-y-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-white">Acompanhamento de Aluguéis</h2>
-                        <button id="new-rental-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex items-center w-full sm:w-auto justify-center">
-                            <i class="fa-solid fa-plus mr-2"></i>Novo Aluguel
-                        </button>
-                    </div>
-                    <div id="rentals-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                         <p id="no-rentals-message" class="text-gray-400 col-span-full">Nenhum aluguel ativo no momento.</p>
-                    </div>
+    <!-- Tools Grid -->
+    <main class="container py-8 min-h-[500px]">
+        <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Loading State -->
+            <div class="col-span-full text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+                <p class="mt-2 text-muted">Carregando ferramentas...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8 mt-auto">
+        <div class="container text-center text-muted text-sm">
+            <p>&copy; 2024 LocaTools. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Carrinho de Aluguel</h3>
+                <button id="close-cart" class="text-gray-400 hover:text-gray-600"><i class="uil uil-times text-xl"></i></button>
+            </div>
+            
+            <div id="cart-items" class="max-h-[300px] overflow-y-auto mb-4 space-y-3">
+                <!-- Cart Items -->
+                <div class="text-center text-muted py-8">Seu carrinho está vazio.</div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-4 space-y-3">
+                <div class="flex justify-between font-bold text-lg">
+                    <span>Total Diário:</span>
+                    <span id="cart-total">R$ 0,00</span>
                 </div>
                 
-                <!-- Aba de Histórico -->
-                <div id="history-tab" class="hidden space-y-6">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-6">Histórico de Aluguéis</h2>
-                    <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700">
-                        <div id="history-list" class="divide-y divide-gray-700">
-                            <p id="no-history-message" class="text-gray-400 py-4">Nenhum aluguel finalizado no histórico.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Aba de Relatórios -->
-                <div id="reports-tab" class="hidden space-y-6">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-6">Relatórios de Faturamento</h2>
-                    <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700 space-y-4">
-                        <h3 class="text-xl font-semibold text-white">Selecionar Período</h3>
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <div class="flex-1">
-                                <label for="start-date" class="block text-sm font-medium text-gray-400 mb-1">Data de Início</label>
-                                <input type="date" id="start-date" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white" style="color-scheme: dark;">
-                            </div>
-                            <div class="flex-1">
-                                <label for="end-date" class="block text-sm font-medium text-gray-400 mb-1">Data de Fim</label>
-                                <input type="date" id="end-date" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white" style="color-scheme: dark;">
-                            </div>
-                        </div>
-                        <button id="generate-report-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex items-center justify-center">
-                            <i class="fa-solid fa-cogs mr-2"></i>Gerar Relatório
-                        </button>
-                    </div>
-                    <div id="report-results" class="hidden bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700 space-y-4">
-                        <div class="flex justify-between items-center">
-                             <h3 class="text-xl font-semibold text-white">Resultados</h3>
-                             <button id="export-csv-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex items-center justify-center">
-                                <i class="fa-solid fa-file-excel mr-2"></i>Exportar para CSV
-                            </button>
-                        </div>
-                        <div id="report-summary" class="bg-gray-700 p-4 rounded-md text-center">
-                            <p class="text-gray-400">Faturamento Total no Período</p>
-                            <p id="report-total-revenue" class="text-3xl font-bold text-white">R$ 0,00</p>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="border-b border-gray-600">
-                                    <tr>
-                                        <th class="p-2">Finalizado em</th>
-                                        <th class="p-2">Cliente</th>
-                                        <th class="p-2">Ferramenta</th>
-                                        <th class="p-2 text-right">Valor Total (R$)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="report-table-body">
-                                    <!-- Linhas do relatório serão inseridas aqui -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Aba de Clientes -->
-                <div id="clients-tab" class="hidden space-y-6">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-6">Gerenciar Clientes</h2>
-                    <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700">
-                        <h3 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Cadastrar Novo Cliente</h3>
-                        <form id="add-client-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="text" id="client-name" placeholder="Nome do Cliente" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" required>
-                            <input type="text" id="client-phone" placeholder="Telefone" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500">
-                            <button type="submit" class="md:col-span-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 flex items-center justify-center">
-                                <i class="fa-solid fa-user-plus mr-2"></i>Salvar Cliente
-                            </button>
-                        </form>
-                    </div>
-                     <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl sm:text-2xl font-semibold text-white">Clientes Cadastrados</h3>
-                            <input type="search" id="search-client-input" placeholder="Buscar cliente..." class="p-2 bg-gray-700 border border-gray-600 rounded-md w-full max-w-xs text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div id="clients-list" class="divide-y divide-gray-700">
-                            <p id="no-clients-message" class="text-gray-400 py-4">Nenhum cliente cadastrado.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Aba de Ferramentas -->
-                <div id="tools-tab" class="hidden space-y-6">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-6">Gerenciar Ferramentas</h2>
-                     <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700">
-                        <h3 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Cadastrar Nova Ferramenta</h3>
-                        <form id="add-tool-form" class="space-y-4">
-                            <input type="text" id="tool-name" placeholder="Nome da Ferramenta" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" required>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Valores (R$)</label>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <input type="number" id="tool-rate-daily" placeholder="Diária Padrão" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" step="0.01" required>
-                                    <input type="number" id="tool-rate-weekly" placeholder="Pacote Semanal (7d)" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" step="0.01" required>
-                                    <input type="number" id="tool-rate-monthly" placeholder="Pacote Mensal (30d)" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" step="0.01" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 flex items-center justify-center">
-                                <i class="fa-solid fa-plus-circle mr-2"></i>Salvar Ferramenta
-                            </button>
-                        </form>
-                    </div>
-                     <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700">
-                        <h3 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Ferramentas Cadastradas</h3>
-                        <div id="tools-list" class="divide-y divide-gray-700">
-                            <p id="no-tools-message" class="text-gray-400 py-4">Nenhuma ferramenta cadastrada.</p>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Modal de Novo Aluguel -->
-    <div id="rental-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden pointer-events-none opacity-0 z-40">
-        <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 transition-transform duration-300">
-            <h2 class="text-2xl font-bold mb-6 text-white">Registrar Novo Aluguel</h2>
-            <form id="add-rental-form" class="space-y-4">
-                <div>
-                    <label for="search-modal-client-input" class="block text-sm font-medium text-gray-400 mb-1">Buscar Cliente</label>
-                    <input type="search" id="search-modal-client-input" placeholder="Digite para buscar..." class="w-full p-2 mb-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500">
-                    <select id="rental-client" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500" required size="5"></select>
-                </div>
-                <div>
-                    <label for="rental-tool" class="block text-sm font-medium text-gray-400 mb-1">Ferramenta</label>
-                    <select id="rental-tool" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500" required></select>
-                </div>
-                <div>
-                    <label for="rental-days" class="block text-sm font-medium text-gray-400 mb-1">Duração (dias)</label>
-                    <input type="number" id="rental-days" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white" required min="1">
-                </div>
-                <div>
-                    <label for="rental-date" class="block text-sm font-medium text-gray-400 mb-1">Data de Início</label>
-                    <input type="date" id="rental-date" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white" required style="color-scheme: dark;">
-                </div>
-                 <div>
-                    <label for="rental-discount" class="block text-sm font-medium text-gray-400 mb-1">Desconto (R$)</label>
-                    <input type="number" id="rental-discount" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white" placeholder="0,00" step="0.01" min="0">
-                </div>
-                <div id="price-preview" class="bg-gray-700 p-4 rounded-md hidden space-y-2">
-                    <div class="flex justify-between text-gray-400">
-                        <span>Subtotal:</span>
-                        <span id="subtotal-price-display">R$ 0,00</span>
-                    </div>
-                    <div class="flex justify-between text-green-400">
-                        <span>Desconto:</span>
-                        <span id="discount-display">- R$ 0,00</span>
-                    </div>
-                    <hr class="border-gray-600">
-                    <div class="flex justify-between items-center text-white">
-                        <span class="text-lg font-bold">Total:</span>
-                        <span id="total-price-display" class="text-3xl font-bold">R$ 0,00</span>
-                    </div>
-                    <p id="rate-info-display" class="text-xs text-gray-500 text-center pt-2"></p>
-                </div>
-                <div class="pt-4 flex justify-end space-x-4">
-                    <button type="button" id="cancel-rental-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Registrar Aluguel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal de Editar Ferramenta -->
-    <div id="edit-tool-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden pointer-events-none opacity-0 z-40">
-        <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 transition-transform duration-300">
-            <h2 class="text-2xl font-bold mb-6 text-white">Editar Ferramenta</h2>
-            <form id="edit-tool-form" class="space-y-4">
-                <input type="hidden" id="edit-tool-id">
-                <input type="text" id="edit-tool-name" placeholder="Nome da Ferramenta" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" required>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-2">Valores (R$)</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <input type="number" id="edit-tool-rate-daily" placeholder="Diária Padrão" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" step="0.01" required>
-                        <input type="number" id="edit-tool-rate-weekly" placeholder="Pacote Semanal" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" step="0.01" required>
-                        <input type="number" id="edit-tool-rate-monthly" placeholder="Pacote Mensal" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" step="0.01" required>
-                    </div>
-                </div>
-                <div class="pt-4 flex justify-end space-x-4">
-                    <button type="button" id="cancel-edit-tool-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Salvar Alterações</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal de Editar Cliente -->
-    <div id="edit-client-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden pointer-events-none opacity-0 z-40">
-        <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-2xl p-6 md:p-8 w-full max-w-lg transform scale-95 transition-transform duration-300">
-            <h2 class="text-2xl font-bold mb-6 text-white">Editar Cliente</h2>
-            <form id="edit-client-form" class="space-y-4">
-                <input type="hidden" id="edit-client-id">
-                <input type="text" id="edit-client-name" placeholder="Nome do Cliente" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500" required>
-                <input type="text" id="edit-client-phone" placeholder="Telefone" class="p-3 bg-gray-700 border border-gray-600 rounded-md w-full text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500">
-                <div class="pt-4 flex justify-end space-x-4">
-                    <button type="button" id="cancel-edit-client-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Salvar Alterações</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Toast Notification -->
-    <div id="toast" class="toast fixed bottom-5 right-5 bg-gray-200 text-gray-900 font-semibold py-3 px-5 rounded-lg shadow-xl z-50">
-        <p id="toast-message"></p>
-    </div>
-
-    <!-- Firebase e Lógica do App -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query, where, getDocs, writeBatch, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-          apiKey: "AIzaSyDMylUG8IxttYiiMFMqlsb5jXkcAaOQ6bQ",
-          authDomain: "painelacailoja.firebaseapp.com",
-          projectId: "painelacailoja",
-          storageBucket: "painelacailoja.appspot.com",
-          messagingSenderId: "1078717306556",
-          appId: "1:1078717306556:web:d77f600b11397f0cf3a2b9",
-          measurementId: "G-FG7P8K2YWH"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        let userId = null;
-        let clientsCol, toolsCol, rentalsCol, historyCol;
-        let allClients = [];
-        let currentReportData = [];
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                userId = user.uid;
-                document.getElementById('user-id-display').textContent = userId;
-                initializeCollections();
-                loadAllData();
-            }
-        });
-
-        (async () => {
-            try {
-                await setPersistence(auth, inMemoryPersistence);
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Authentication Error:", error);
-                document.getElementById('user-id-display').textContent = "Erro de autenticação.";
-            }
-        })();
-        
-        function initializeCollections() {
-            if (!userId) return;
-            clientsCol = collection(db, 'rentalClients');
-            toolsCol = collection(db, 'rentalTools');
-            rentalsCol = collection(db, 'rentalsActive');
-            historyCol = collection(db, 'rentalsHistory');
-        }
-
-        function loadAllData() {
-            if (!userId) return;
-            loadClients();
-            loadTools();
-            loadRentals();
-            loadHistory();
-        }
-
-        // --- LÓGICA DO MENU MOBILE ---
-        const sidebar = document.getElementById('sidebar');
-        const openSidebarBtn = document.getElementById('open-sidebar-btn');
-        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-        function openSidebar() {
-            sidebar.classList.remove('-translate-x-full');
-            sidebarOverlay.classList.remove('hidden');
-        }
-
-        function closeSidebar() {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        }
-
-        openSidebarBtn.addEventListener('click', openSidebar);
-        closeSidebarBtn.addEventListener('click', closeSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
-
-        // --- LÓGICA DAS ABAS ---
-        const tabs = ['rentals', 'history', 'reports', 'clients', 'tools'];
-        window.switchTab = (tabName) => {
-            tabs.forEach(tab => {
-                document.getElementById(`${tab}-tab`).classList.add('hidden');
-            });
-            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
-
-            document.querySelectorAll('.nav-button').forEach(button => {
-                button.classList.remove('active');
-            });
-            document.querySelector(`button[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            
-            if (window.innerWidth < 768) {
-                closeSidebar();
-            }
-        };
-
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toast-message');
-        let toastTimeout;
-
-        function showToast(message) {
-            toastMessage.textContent = message;
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // --- LÓGICA DE CLIENTES ---
-        const addClientForm = document.getElementById('add-client-form');
-        const clientNameInput = document.getElementById('client-name');
-        const clientPhoneInput = document.getElementById('client-phone');
-        const clientsList = document.getElementById('clients-list');
-        const noClientsMessage = document.getElementById('no-clients-message');
-        const editClientModal = document.getElementById('edit-client-modal');
-        const editClientForm = document.getElementById('edit-client-form');
-        const cancelEditClientBtn = document.getElementById('cancel-edit-client-btn');
-        const searchClientInput = document.getElementById('search-client-input');
-        const searchModalClientInput = document.getElementById('search-modal-client-input');
-
-
-        addClientForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!userId) return showToast("Erro: Usuário não autenticado.");
-            
-            try {
-                await addDoc(clientsCol, { name: clientNameInput.value, phone: clientPhoneInput.value });
-                showToast("Cliente adicionado com sucesso!");
-                addClientForm.reset();
-            } catch (error) {
-                console.error("Erro ao adicionar cliente:", error);
-                showToast("Falha ao adicionar cliente.");
-            }
-        });
-
-        function renderClients(clientsToRender) {
-             if (clientsToRender.length === 0) {
-                clientsList.innerHTML = `<p class="text-gray-400 py-4">Nenhum cliente encontrado.</p>`;
-                noClientsMessage.classList.add('hidden');
-                return;
-            }
-            
-            noClientsMessage.classList.add('hidden');
-            clientsList.innerHTML = clientsToRender.map(client => `
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4">
-                    <div class="flex-1">
-                        <p class="font-medium text-white">${client.name}</p>
-                        <p class="text-sm text-gray-400">${client.phone || 'Sem telefone'}</p>
-                    </div>
-                    <div class="flex space-x-2 mt-2 sm:mt-0">
-                        <button onclick="window.openEditClientModal('${client.id}')" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-md w-10 h-10 flex items-center justify-center"><i class="fa-solid fa-pencil"></i></button>
-                        <button onclick="window.deleteClient('${client.id}')" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-md w-10 h-10 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        searchClientInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredClients = allClients.filter(client => client.name.toLowerCase().includes(searchTerm));
-            renderClients(filteredClients);
-        });
-
-        searchModalClientInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const options = rentalClientSelect.options;
-            for (let i = 0; i < options.length; i++) {
-                const optionText = options[i].text.toLowerCase();
-                options[i].style.display = optionText.includes(searchTerm) ? '' : 'none';
-            }
-        });
-
-
-        function loadClients() {
-            onSnapshot(query(clientsCol), (snapshot) => {
-                allClients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderClients(allClients);
-                updateRentalFormClients(allClients);
-            });
-        }
-
-        const closeEditClientModal = () => {
-            editClientModal.querySelector('div').classList.remove('scale-100');
-            editClientModal.classList.remove('opacity-100');
-            editClientModal.classList.add('pointer-events-none', 'hidden');
-        };
-
-        window.openEditClientModal = async (clientId) => {
-            try {
-                const clientRef = doc(clientsCol, clientId);
-                const clientSnap = await getDoc(clientRef);
-                if (clientSnap.exists()) {
-                    const client = clientSnap.data();
-                    document.getElementById('edit-client-id').value = clientId;
-                    document.getElementById('edit-client-name').value = client.name;
-                    document.getElementById('edit-client-phone').value = client.phone || '';
-
-                    editClientModal.classList.remove('hidden');
-                    editClientModal.classList.add('pointer-events-auto', 'opacity-100');
-                    editClientModal.querySelector('div').classList.add('scale-100');
-                } else {
-                    showToast("Erro: Cliente não encontrado.");
-                }
-            } catch(error) {
-                showToast("Erro ao carregar dados do cliente.");
-                console.error("Erro ao buscar cliente:", error);
-            }
-        };
-
-        cancelEditClientBtn.addEventListener('click', closeEditClientModal);
-
-        async function updateClientNameInRentals(clientId, newName) {
-            const batch = writeBatch(db);
-            
-            const activeRentalsQuery = query(rentalsCol, where("clientId", "==", clientId));
-            const activeRentalsSnapshot = await getDocs(activeRentalsQuery);
-            activeRentalsSnapshot.forEach(doc => {
-                batch.update(doc.ref, { clientName: newName });
-            });
-
-            const historyRentalsQuery = query(historyCol, where("clientId", "==", clientId));
-            const historyRentalsSnapshot = await getDocs(historyRentalsQuery);
-            historyRentalsSnapshot.forEach(doc => {
-                batch.update(doc.ref, { clientName: newName });
-            });
-
-            await batch.commit();
-        }
-
-        editClientForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const clientId = document.getElementById('edit-client-id').value;
-            const newName = document.getElementById('edit-client-name').value;
-            const newPhone = document.getElementById('edit-client-phone').value;
-            
-            try {
-                await updateDoc(doc(clientsCol, clientId), { name: newName, phone: newPhone });
-                await updateClientNameInRentals(clientId, newName);
-                showToast("Cliente atualizado com sucesso!");
-                closeEditClientModal();
-            } catch (error) {
-                console.error("Erro ao atualizar cliente:", error);
-                showToast("Falha ao atualizar cliente.");
-            }
-        });
-
-        window.deleteClient = async (clientId) => {
-            const activeRentalsQuery = query(rentalsCol, where("clientId", "==", clientId));
-            const activeRentalsSnapshot = await getDocs(activeRentalsQuery);
-            if (!activeRentalsSnapshot.empty) {
-                showToast("Não é possível excluir um cliente com aluguéis ativos.");
-                return;
-            }
-
-            const userConfirmed = await showConfirmation("Excluir este cliente? Esta ação é permanente.");
-            if (userConfirmed) {
-                if (!userId) return showToast("Erro: Usuário não autenticado.");
-                try {
-                    await deleteDoc(doc(clientsCol, clientId));
-                    showToast("Cliente excluído com sucesso.");
-                } catch (error) {
-                    console.error("Erro ao excluir cliente:", error);
-                    showToast("Falha ao excluir cliente.");
-                }
-            }
-        };
-
-
-        // --- LÓGICA DE FERRAMENTAS ---
-        const addToolForm = document.getElementById('add-tool-form');
-        const toolNameInput = document.getElementById('tool-name');
-        const toolRateDailyInput = document.getElementById('tool-rate-daily');
-        const toolRateWeeklyInput = document.getElementById('tool-rate-weekly');
-        const toolRateMonthlyInput = document.getElementById('tool-rate-monthly');
-        const toolsList = document.getElementById('tools-list');
-        const noToolsMessage = document.getElementById('no-tools-message');
-        const editToolModal = document.getElementById('edit-tool-modal');
-        const editToolForm = document.getElementById('edit-tool-form');
-        const cancelEditToolBtn = document.getElementById('cancel-edit-tool-btn');
-
-        addToolForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!userId) return showToast("Erro: Usuário não autenticado.");
-
-            try {
-                await addDoc(toolsCol, { 
-                    name: toolNameInput.value, 
-                    dailyRate: parseFloat(toolRateDailyInput.value),
-                    weeklyRate: parseFloat(toolRateWeeklyInput.value),
-                    monthlyRate: parseFloat(toolRateMonthlyInput.value)
-                });
-                showToast("Ferramenta adicionada com sucesso!");
-                addToolForm.reset();
-            } catch (error) {
-                console.error("Erro ao adicionar ferramenta:", error);
-                showToast("Falha ao adicionar ferramenta.");
-            }
-        });
-
-        function loadTools() {
-            onSnapshot(query(toolsCol), (snapshot) => {
-                const toolsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateRentalFormTools(toolsData);
-
-                if (snapshot.empty) {
-                    toolsList.innerHTML = '';
-                    noToolsMessage.classList.remove('hidden');
-                    return;
-                }
-
-                noToolsMessage.classList.add('hidden');
-                toolsList.innerHTML = toolsData.map(tool => `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4">
-                        <div class="flex-1">
-                            <p class="font-medium text-white mb-2 sm:mb-0">${tool.name}</p>
-                            <div class="text-xs text-gray-400 flex flex-wrap gap-x-3 gap-y-1">
-                                <span>Diária: R$ ${(tool.dailyRate || 0).toFixed(2).replace('.', ',')}</span>
-                                <span>Pacote Semanal: R$ ${(tool.weeklyRate || 0).toFixed(2).replace('.', ',')}</span>
-                                <span>Pacote Mensal: R$ ${(tool.monthlyRate || 0).toFixed(2).replace('.', ',')}</span>
-                            </div>
-                        </div>
-                        <div class="flex space-x-2 mt-2 sm:mt-0">
-                            <button onclick="window.openEditToolModal('${tool.id}')" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-md w-10 h-10 flex items-center justify-center"><i class="fa-solid fa-pencil"></i></button>
-                            <button onclick="window.deleteTool('${tool.id}')" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-md w-10 h-10 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                `).join('');
-            });
-        }
-        
-        window.deleteTool = async (toolId) => {
-            const userConfirmed = await showConfirmation("Excluir esta ferramenta? Esta ação é permanente.");
-            if (userConfirmed) {
-                if (!userId) return showToast("Erro: Usuário não autenticado.");
-                try {
-                    await deleteDoc(doc(toolsCol, toolId));
-                    showToast("Ferramenta excluída com sucesso.");
-                } catch (error) {
-                    console.error("Erro ao excluir ferramenta:", error);
-                    showToast("Falha ao excluir ferramenta.");
-                }
-            }
-        };
-
-        const closeEditToolModal = () => {
-            editToolModal.querySelector('div').classList.remove('scale-100');
-            editToolModal.classList.remove('opacity-100');
-            editToolModal.classList.add('pointer-events-none', 'hidden');
-        };
-
-        window.openEditToolModal = async (toolId) => {
-            try {
-                const toolRef = doc(toolsCol, toolId);
-                const toolSnap = await getDoc(toolRef);
-                if (toolSnap.exists()) {
-                    const tool = toolSnap.data();
-                    document.getElementById('edit-tool-id').value = toolId;
-                    document.getElementById('edit-tool-name').value = tool.name;
-                    document.getElementById('edit-tool-rate-daily').value = tool.dailyRate || 0;
-                    document.getElementById('edit-tool-rate-weekly').value = tool.weeklyRate || 0;
-                    document.getElementById('edit-tool-rate-monthly').value = tool.monthlyRate || 0;
-
-                    editToolModal.classList.remove('hidden');
-                    editToolModal.classList.add('pointer-events-auto', 'opacity-100');
-                    editToolModal.querySelector('div').classList.add('scale-100');
-                } else {
-                    showToast("Erro: Ferramenta não encontrada.");
-                }
-            } catch(error) {
-                showToast("Erro ao carregar dados da ferramenta.");
-                console.error("Erro ao buscar ferramenta:", error);
-            }
-        };
-
-        editToolForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const toolId = document.getElementById('edit-tool-id').value;
-            const updatedData = {
-                name: document.getElementById('edit-tool-name').value,
-                dailyRate: parseFloat(document.getElementById('edit-tool-rate-daily').value),
-                weeklyRate: parseFloat(document.getElementById('edit-tool-rate-weekly').value),
-                monthlyRate: parseFloat(document.getElementById('edit-tool-rate-monthly').value),
-            };
-
-            try {
-                await updateDoc(doc(toolsCol, toolId), updatedData);
-                showToast("Ferramenta atualizada com sucesso!");
-                closeEditToolModal();
-            } catch (error) {
-                console.error("Erro ao atualizar ferramenta:", error);
-                showToast("Falha ao atualizar ferramenta.");
-            }
-        });
-
-        cancelEditToolBtn.addEventListener('click', closeEditToolModal);
-
-
-        // --- LÓGICA DE ALUGUÉIS ---
-        const rentalModal = document.getElementById('rental-modal');
-        const newRentalBtn = document.getElementById('new-rental-btn');
-        const cancelRentalBtn = document.getElementById('cancel-rental-btn');
-        const addRentalForm = document.getElementById('add-rental-form');
-        const rentalClientSelect = document.getElementById('rental-client');
-        const rentalToolSelect = document.getElementById('rental-tool');
-        const rentalDaysInput = document.getElementById('rental-days');
-        const rentalDateInput = document.getElementById('rental-date');
-        const rentalDiscountInput = document.getElementById('rental-discount');
-        const rentalsList = document.getElementById('rentals-list');
-        const noRentalsMessage = document.getElementById('no-rentals-message');
-        const pricePreview = document.getElementById('price-preview');
-        const subtotalPriceDisplay = document.getElementById('subtotal-price-display');
-        const discountDisplay = document.getElementById('discount-display');
-        const totalPriceDisplay = document.getElementById('total-price-display');
-        const rateInfoDisplay = document.getElementById('rate-info-display');
-
-        function calculatePrice(days, dailyRate, weeklyRate, monthlyRate) {
-             if (!days || days < 1) {
-                return { subtotal: 0, details: '' };
-            }
-
-            let subtotal = 0;
-            let details = '';
-
-            if (days >= 30 && monthlyRate > 0) {
-                const extraDays = days - 30;
-                subtotal = monthlyRate + (extraDays > 0 ? extraDays * dailyRate : 0);
-                details = `Pacote Mensal` + (extraDays > 0 ? ` + ${extraDays} diária(s)` : '');
-            } else if (days >= 7 && weeklyRate > 0) {
-                const extraDays = days - 7;
-                subtotal = weeklyRate + (extraDays > 0 ? extraDays * dailyRate : 0);
-                details = `Pacote Semanal` + (extraDays > 0 ? ` + ${extraDays} diária(s)` : '');
-            } else {
-                subtotal = days * dailyRate;
-                details = `${days} diária(s) x R$ ${dailyRate.toFixed(2).replace('.', ',')}`;
-            }
-            return { subtotal, details };
-        }
-
-        function updatePrice() {
-            const selectedToolOption = rentalToolSelect.options[rentalToolSelect.selectedIndex];
-            const days = parseInt(rentalDaysInput.value);
-            const discount = parseFloat(rentalDiscountInput.value) || 0;
-
-            if (!selectedToolOption || !selectedToolOption.value || !days || days < 1) {
-                pricePreview.classList.add('hidden');
-                return;
-            }
-
-            const dailyRate = parseFloat(selectedToolOption.dataset.rateDaily);
-            const weeklyRate = parseFloat(selectedToolOption.dataset.rateWeekly);
-            const monthlyRate = parseFloat(selectedToolOption.dataset.rateMonthly);
-
-            const { subtotal, details } = calculatePrice(days, dailyRate, weeklyRate, monthlyRate);
-            const finalTotal = subtotal - discount > 0 ? subtotal - discount : 0;
-
-            subtotalPriceDisplay.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-            discountDisplay.textContent = `- R$ ${discount.toFixed(2).replace('.', ',')}`;
-            totalPriceDisplay.textContent = `R$ ${finalTotal.toFixed(2).replace('.', ',')}`;
-            rateInfoDisplay.textContent = details;
-            pricePreview.classList.remove('hidden');
-        }
-
-        rentalToolSelect.addEventListener('change', updatePrice);
-        rentalDaysInput.addEventListener('input', updatePrice);
-        rentalDiscountInput.addEventListener('input', updatePrice);
-
-        newRentalBtn.addEventListener('click', () => {
-            addRentalForm.reset();
-            pricePreview.classList.add('hidden');
-            searchModalClientInput.value = ''; // Limpa a busca
-            // Mostra todas as opções novamente
-            const options = rentalClientSelect.options;
-            for (let i = 0; i < options.length; i++) {
-                options[i].style.display = '';
-            }
-            rentalModal.classList.remove('hidden');
-            rentalModal.classList.add('pointer-events-auto', 'opacity-100');
-            rentalModal.querySelector('div').classList.add('scale-100');
-        });
-
-        const closeModal = () => {
-            rentalModal.querySelector('div').classList.remove('scale-100');
-            rentalModal.classList.remove('opacity-100');
-            rentalModal.classList.add('pointer-events-none', 'hidden');
-        };
-
-        cancelRentalBtn.addEventListener('click', closeModal);
-        rentalModal.addEventListener('click', (e) => {
-            if (e.target === rentalModal) closeModal();
-        });
-
-        function updateRentalFormClients(clients) {
-            if (clients.length === 0) {
-                rentalClientSelect.innerHTML = '<option disabled selected>Cadastre um cliente</option>';
-            } else {
-                rentalClientSelect.innerHTML = clients.map(c => `<option value="${c.id}" data-name="${c.name}">${c.name}</option>`).join('');
-            }
-        }
-
-        function updateRentalFormTools(tools) {
-            if (tools.length === 0) {
-                rentalToolSelect.innerHTML = '<option disabled selected>Cadastre uma ferramenta</option>';
-            } else {
-                rentalToolSelect.innerHTML = '<option value="" disabled selected>Selecione uma ferramenta</option>' + 
-                tools.map(t => `<option value="${t.id}" data-name="${t.name}" 
-                    data-rate-daily="${t.dailyRate}" 
-                    data-rate-weekly="${t.weeklyRate}" 
-                    data-rate-monthly="${t.monthlyRate}">
-                    ${t.name}
-                </option>`).join('');
-            }
-        }
-        
-        addRentalForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!userId) return showToast("Erro: Usuário não autenticado.");
-
-            const selectedClientOption = rentalClientSelect.options[rentalClientSelect.selectedIndex];
-            const selectedToolOption = rentalToolSelect.options[rentalToolSelect.selectedIndex];
-            const days = parseInt(rentalDaysInput.value);
-            const discount = parseFloat(rentalDiscountInput.value) || 0;
-
-            if (!selectedClientOption || !selectedClientOption.value || !selectedToolOption.value || !days || days < 1) {
-                showToast("Por favor, preencha todos os campos.");
-                return;
-            }
-
-            const dailyRate = parseFloat(selectedToolOption.dataset.rateDaily);
-            const weeklyRate = parseFloat(selectedToolOption.dataset.rateWeekly);
-            const monthlyRate = parseFloat(selectedToolOption.dataset.rateMonthly);
-
-            const { subtotal, details } = calculatePrice(days, dailyRate, weeklyRate, monthlyRate);
-            const finalTotal = subtotal - discount > 0 ? subtotal - discount : 0;
-
-            const startDate = new Date(rentalDateInput.value + 'T00:00:00-03:00');
-            const dueDate = new Date(startDate);
-            dueDate.setDate(startDate.getDate() + days);
-
-            try {
-                await addDoc(rentalsCol, {
-                    clientId: rentalClientSelect.value,
-                    clientName: selectedClientOption.dataset.name,
-                    toolId: rentalToolSelect.value,
-                    toolName: selectedToolOption.dataset.name,
-                    rentalDate: rentalDateInput.value,
-                    dueDate: dueDate.toISOString(),
-                    rentalDays: days,
-                    subtotal: subtotal,
-                    discount: discount,
-                    totalPrice: finalTotal,
-                    priceCalculationDetails: details,
-                    status: 'active'
-                });
-                showToast("Aluguel registrado!");
-                closeModal();
-            } catch (error) {
-                console.error("Erro ao registrar aluguel:", error);
-                showToast("Falha ao registrar aluguel.");
-            }
-        });
-
-        function loadRentals() {
-            onSnapshot(query(rentalsCol), (snapshot) => {
-                if (snapshot.empty) {
-                    rentalsList.innerHTML = '';
-                    noRentalsMessage.classList.remove('hidden');
-                    return;
-                }
-                
-                noRentalsMessage.classList.add('hidden');
-                const rentalsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                rentalsList.innerHTML = rentalsData.map(rental => {
-                    const now = new Date();
-                    const dueDate = new Date(rental.dueDate);
-                    
-                    now.setHours(0, 0, 0, 0);
-                    dueDate.setHours(0, 0, 0, 0);
-
-                    const diffTime = dueDate.getTime() - now.getTime();
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                    let statusText = '';
-                    let statusColorClass = 'border-gray-700';
-
-                    if (diffDays < 0) {
-                        statusText = `Vencido há ${Math.abs(diffDays)} dia(s)`;
-                        statusColorClass = 'border-red-500';
-                    } else if (diffDays === 0) {
-                        statusText = 'Vence hoje';
-                        statusColorClass = 'border-red-500';
-                    } else if (diffDays <= 2) {
-                        statusText = `Vence em ${diffDays} dia(s)`;
-                        statusColorClass = 'border-yellow-400';
-                    } else {
-                         statusText = `Vence em ${diffDays} dia(s)`;
-                    }
-
-                    const discountInfo = rental.discount > 0 ? `<p class="text-sm text-green-400">Desconto de R$ ${rental.discount.toFixed(2).replace('.',',')} aplicado</p>` : '';
-
-                    return `
-                    <div class="bg-gray-800 border-2 ${statusColorClass} rounded-lg shadow-lg p-5 flex flex-col justify-between transition-transform hover:scale-105">
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Período de Aluguel</label>
+                    <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <div class="flex justify-between items-start">
-                                <p class="font-bold text-lg text-blue-400">${rental.toolName}</p>
-                                <span class="text-xs font-bold ${statusColorClass === 'border-red-500' ? 'text-red-400' : (statusColorClass === 'border-yellow-400' ? 'text-yellow-400' : 'text-gray-400')}">${statusText}</span>
-                            </div>
-
-                            <p class="font-bold text-2xl text-white my-2">R$ ${(rental.totalPrice || 0).toFixed(2).replace('.',',')}</p>
-                            ${discountInfo}
-                            <div class="space-y-2 text-sm mt-4 text-gray-400">
-                                <p><i class="fa-solid fa-user fa-fw w-5"></i> <span class="font-medium text-gray-300">Cliente:</span> ${rental.clientName}</p>
-                                <p><i class="fa-solid fa-calculator fa-fw w-5"></i> <span class="font-medium text-gray-300">Cálculo:</span> ${rental.priceCalculationDetails || 'N/A'}</p>
-                            </div>
+                            <span class="text-xs text-muted">Início</span>
+                            <input type="date" id="date-start" class="input text-sm">
                         </div>
-                        <button onclick="window.finishRental('${rental.id}')" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-                            <i class="fa-solid fa-check-circle mr-2"></i>Finalizar Aluguel
-                        </button>
-                    </div>
-                `}).join('');
-            });
-        }
-        
-        window.finishRental = async (rentalId) => {
-            const userConfirmed = await showConfirmation("Finalizar este aluguel? Ele será movido para o histórico.");
-            if (userConfirmed) {
-                 if (!userId) return showToast("Erro: Usuário não autenticado.");
-                try {
-                    const rentalRef = doc(rentalsCol, rentalId);
-                    const rentalSnap = await getDoc(rentalRef);
-
-                    if (rentalSnap.exists()) {
-                        const rentalData = rentalSnap.data();
-                        await addDoc(historyCol, { ...rentalData, finishedAt: serverTimestamp() });
-                        await deleteDoc(rentalRef);
-                        showToast("Aluguel movido para o histórico.");
-                    } else {
-                         showToast("Erro: Aluguel não encontrado.");
-                    }
-                } catch (error) {
-                    console.error("Erro ao finalizar aluguel:", error);
-                    showToast("Falha ao finalizar aluguel.");
-                }
-            }
-        };
-
-        // --- LÓGICA DE RELATÓRIOS ---
-        const generateReportBtn = document.getElementById('generate-report-btn');
-        const exportCsvBtn = document.getElementById('export-csv-btn');
-        const reportResultsDiv = document.getElementById('report-results');
-        const reportTotalRevenue = document.getElementById('report-total-revenue');
-        const reportTableBody = document.getElementById('report-table-body');
-
-        generateReportBtn.addEventListener('click', async () => {
-            const startDateInput = document.getElementById('start-date').value;
-            const endDateInput = document.getElementById('end-date').value;
-
-            if (!startDateInput || !endDateInput) {
-                showToast("Por favor, selecione as datas de início e fim.");
-                return;
-            }
-
-            const startDate = new Date(startDateInput + 'T00:00:00-03:00');
-            const endDate = new Date(endDateInput + 'T23:59:59-03:00');
-
-            if (startDate > endDate) {
-                showToast("A data de início não pode ser maior que a data de fim.");
-                return;
-            }
-
-            const startTimestamp = Timestamp.fromDate(startDate);
-            const endTimestamp = Timestamp.fromDate(endDate);
-
-            const reportQuery = query(historyCol, where("finishedAt", ">=", startTimestamp), where("finishedAt", "<=", endTimestamp));
-            
-            try {
-                const querySnapshot = await getDocs(reportQuery);
-                currentReportData = querySnapshot.docs.map(doc => doc.data());
-
-                let totalRevenue = 0;
-                reportTableBody.innerHTML = '';
-
-                if (currentReportData.length === 0) {
-                     reportTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Nenhum registro encontrado para este período.</td></tr>`;
-                } else {
-                    currentReportData.forEach(item => {
-                        totalRevenue += item.totalPrice;
-                        const finishedDate = item.finishedAt.toDate().toLocaleDateString('pt-BR');
-                        const row = `
-                            <tr>
-                                <td class="p-2">${finishedDate}</td>
-                                <td class="p-2">${item.clientName}</td>
-                                <td class="p-2">${item.toolName}</td>
-                                <td class="p-2 text-right">R$ ${(item.totalPrice || 0).toFixed(2).replace('.', ',')}</td>
-                            </tr>
-                        `;
-                        reportTableBody.innerHTML += row;
-                    });
-                }
-
-                reportTotalRevenue.textContent = `R$ ${totalRevenue.toFixed(2).replace('.', ',')}`;
-                reportResultsDiv.classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Erro ao gerar relatório:", error);
-                showToast("Falha ao gerar relatório.");
-            }
-        });
-
-        exportCsvBtn.addEventListener('click', () => {
-            if (currentReportData.length === 0) {
-                showToast("Não há dados para exportar.");
-                return;
-            }
-
-            const headers = ['Finalizado em', 'Cliente', 'Ferramenta', 'Valor Total (R$)'];
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
-
-            currentReportData.forEach(item => {
-                const finishedDate = item.finishedAt.toDate().toLocaleDateString('pt-BR');
-                const row = [
-                    finishedDate,
-                    `"${item.clientName}"`,
-                    `"${item.toolName}"`,
-                    (item.totalPrice || 0).toFixed(2).replace('.', ',')
-                ].join(",");
-                csvContent += row + "\n";
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "relatorio_faturamento.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-
-
-        const historyList = document.getElementById('history-list');
-        const noHistoryMessage = document.getElementById('no-history-message');
-
-        function loadHistory() {
-            onSnapshot(query(historyCol), (snapshot) => {
-                if(snapshot.empty) {
-                    historyList.innerHTML = '';
-                    noHistoryMessage.classList.remove('hidden');
-                    return;
-                }
-
-                noHistoryMessage.classList.add('hidden');
-                const historyData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                historyList.innerHTML = historyData.map(item => {
-                    const startDate = new Date(item.rentalDate + 'T00:00:00-03:00');
-                    const formattedStartDate = startDate.toLocaleDateString('pt-BR');
-                    const finishedDate = item.finishedAt ? item.finishedAt.toDate().toLocaleDateString('pt-BR') : 'N/A';
-
-                    return `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 gap-4">
-                        <div class="flex-1 grid grid-cols-2 sm:grid-cols-5 gap-x-4 gap-y-2 items-center w-full">
-                            <p class="font-medium text-white col-span-2 sm:col-span-1">${item.toolName}</p>
-                            <p class="text-sm text-gray-400 col-span-2 sm:col-span-1">Cliente: ${item.clientName}</p>
-                            <p class="text-sm text-gray-400 font-semibold">R$ ${(item.totalPrice || 0).toFixed(2).replace('.',',')}</p>
-                            <p class="text-sm text-gray-400">Início: ${formattedStartDate}</p>
-                            <p class="text-sm text-gray-400">Fim: ${finishedDate}</p>
-                        </div>
-                        <button onclick="window.deleteFromHistory('${item.id}')" class="w-full sm:w-auto ml-0 sm:ml-4 bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex-shrink-0">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                    `
-                }).join('');
-            });
-        }
-
-        window.deleteFromHistory = async (historyId) => {
-            const userConfirmed = await showConfirmation("Excluir registro do histórico? Esta ação é PERMANENTE.");
-            if(userConfirmed) {
-                if (!userId) return showToast("Erro: Usuário não autenticado.");
-                try {
-                    await deleteDoc(doc(historyCol, historyId));
-                    showToast("Registro excluído permanentemente.");
-                } catch (error) {
-                    console.error("Erro ao excluir registro:", error);
-                    showToast("Falha ao excluir registro.");
-                }
-            }
-        };
-
-        function showConfirmation(message) {
-            return new Promise(resolve => {
-                const confirmModal = document.createElement('div');
-                confirmModal.className = 'fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50';
-                confirmModal.innerHTML = `
-                    <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-2xl p-6 w-full max-w-sm text-center">
-                        <p class="mb-6 text-white">${message}</p>
-                        <div class="flex justify-center space-x-4">
-                            <button id="confirm-cancel" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg">Cancelar</button>
-                            <button id="confirm-ok" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg">Confirmar</button>
+                        <div>
+                            <span class="text-xs text-muted">Devolução</span>
+                            <input type="date" id="date-end" class="input text-sm">
                         </div>
                     </div>
-                `;
-                document.body.appendChild(confirmModal);
+                </div>
 
-                document.getElementById('confirm-ok').onclick = () => {
-                    document.body.removeChild(confirmModal);
-                    resolve(true);
-                };
-                document.getElementById('confirm-cancel').onclick = () => {
-                    document.body.removeChild(confirmModal);
-                    resolve(false);
-                };
-            });
-        }
-    </script>
+                <div class="bg-blue-50 p-3 rounded text-sm text-blue-800 flex justify-between">
+                    <span>Total Estimado (<span id="total-days">0</span> dias):</span>
+                    <span class="font-bold" id="final-total">R$ 0,00</span>
+                </div>
+
+                <button id="checkout-btn" class="btn btn-primary btn-block py-3 mt-2" disabled>
+                    Finalizar Pedido via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/home.js"></script>
+    <script type="module" src="js/cart.js"></script>
+    <script type="module" src="js/checkout.js"></script>
 </body>
 </html>
