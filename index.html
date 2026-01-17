@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +9,27 @@
     <link rel="stylesheet" href="css/styles.css">
     <!-- Unicons for icons -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
-    <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind for utility classes compatibility if needed, but styling is mainly in styles.css -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind for utility classes compatibility if needed, but styling is mainly in styles.css -->
 </head>
+
 <body>
 
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container flex justify-between items-center">
-            <a href="/" class="nav-brand">
+            <a href="index.html" class="nav-brand">
                 <i class="uil uil-wrench text-primary text-2xl"></i>
                 <span>LocaTools</span>
             </a>
-            
+
             <div class="flex items-center gap-4">
                 <button class="btn btn-outline relative" id="cart-btn">
                     <i class="uil uil-shopping-cart text-xl"></i>
-                    <span id="cart-count" class="badge badge-danger" style="position: absolute; top: -5px; right: -5px; padding: 2px 6px; font-size: 10px;">0</span>
+                    <span id="cart-count" class="badge badge-danger"
+                        style="position: absolute; top: -5px; right: -5px; padding: 2px 6px; font-size: 10px;">0</span>
                 </button>
-                <a href="/login.html" class="text-muted hover:text-primary">
+                <a href="login.html" class="text-muted hover:text-primary">
                     <i class="uil uil-lock text-xl"></i>
                 </a>
             </div>
@@ -36,7 +40,8 @@
     <header class="bg-white border-b border-gray-200 py-12">
         <div class="container text-center">
             <h1 class="text-4xl font-bold text-gray-900 mb-4">Ferramentas Profissionais para seu Projeto</h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Alugue equipamentos de alta qualidade de forma rápida, simples e sem burocracia.</p>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Alugue equipamentos de alta qualidade de forma rápida,
+                simples e sem burocracia.</p>
         </div>
     </header>
 
@@ -64,7 +69,9 @@
         <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- Loading State -->
             <div class="col-span-full text-center py-20">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+                <div
+                    class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent">
+                </div>
                 <p class="mt-2 text-muted">Carregando ferramentas...</p>
             </div>
         </div>
@@ -82,9 +89,10 @@
         <div class="modal">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold">Carrinho de Aluguel</h3>
-                <button id="close-cart" class="text-gray-400 hover:text-gray-600"><i class="uil uil-times text-xl"></i></button>
+                <button id="close-cart" class="text-gray-400 hover:text-gray-600"><i
+                        class="uil uil-times text-xl"></i></button>
             </div>
-            
+
             <div id="cart-items" class="max-h-[300px] overflow-y-auto mb-4 space-y-3">
                 <!-- Cart Items -->
                 <div class="text-center text-muted py-8">Seu carrinho está vazio.</div>
@@ -95,7 +103,7 @@
                     <span>Total Diário:</span>
                     <span id="cart-total">R$ 0,00</span>
                 </div>
-                
+
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-gray-700">Período de Aluguel</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -127,4 +135,5 @@
     <script type="module" src="js/cart.js"></script>
     <script type="module" src="js/checkout.js"></script>
 </body>
+
 </html>

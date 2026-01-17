@@ -11,7 +11,7 @@ export async function login(email, password) {
 
         if (error) throw error;
 
-        window.location.href = '/dashboard.html';
+        window.location.href = 'dashboard.html';
     } catch (error) {
         handleError(error, 'Login');
     }
@@ -22,7 +22,7 @@ export async function logout() {
     try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
-        window.location.href = '/login.html';
+        window.location.href = 'login.html';
     } catch (error) {
         handleError(error, 'Logout');
     }
@@ -32,6 +32,6 @@ export async function logout() {
 export async function checkLoginRedirect() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-        window.location.href = '/dashboard.html';
+        window.location.href = 'dashboard.html';
     }
 }
