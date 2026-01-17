@@ -32,6 +32,9 @@
                 <a href="#" class="sidebar-link" data-tab="tools">
                     <i class="uil uil-drill text-lg"></i> Ferramentas
                 </a>
+                <a href="#" class="sidebar-link" data-tab="clients">
+                    <i class="uil uil-users-alt text-lg"></i> Clientes
+                </a>
                 <a href="#" class="sidebar-link" data-tab="settings">
                     <i class="uil uil-setting text-lg"></i> Configurações
                 </a>
@@ -120,11 +123,122 @@
             </div>
         </div>
     </div>
+    <!-- Client Modal -->
+    <div id="client-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold" id="client-modal-title">Novo Cliente</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600"><i
+                        class="uil uil-times text-xl"></i></button>
+            </div>
+            <form id="client-form" class="space-y-4">
+                <input type="hidden" id="client-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome</label>
+                    <input type="text" id="client-name" class="input" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Telefone (WahtsApp)</label>
+                    <input type="text" id="client-phone" class="input" placeholder="5511999999999">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="client-email" class="input">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Endereço</label>
+                    <textarea id="client-address" class="input" rows="2"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" class="btn btn-outline close-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- Scripts -->
-    <script type="module" src="js/dashboard.js"></script>
-    <script type="module" src="js/rentals.js"></script>
-    <script type="module" src="js/messages.js"></script>
-</body>
+    <!-- Manual Rental Modal -->
+    <div id="manual-rental-modal" class="modal-overlay">
+        <div class="modal max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold" id="manual-rental-title">Novo Aluguel Manual</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600"><i
+                        class="uil uil-times text-xl"></i></button>
+            </div>
+            <form id="manual-rental-form" class="space-y-4">
+                <input type="hidden" id="manual-rental-id">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Cliente</label>
+                        <select id="rental-client-select" class="input" required>
+                            <option value="">Selecione um cliente...</option>
+                            <!-- Populated via JS -->
+                        </select>
+                        <p class="text-xs text-muted mt-1">Cadastre o cliente na aba Clientes primeiro.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Status Inicial</label>
+                        <select id="rental-status-select" class="input" required>
+                            <option value="pending">Pendente</option>
+                            <option value="active">Ativo (Entregue)</option>
+                            <option value="completed">Finalizado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Data Início</label>
+                        <input type="date" id="rental-start-date" class="input" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Data Devolução</label>
+                        <input type="date" id="rental-end-date" class="input" required>
+                    </div>
+                </div>
+
+                <!-- Tool Selection Area -->
+                <div class="border-t pt-4 mt-2">
+                    <label class="block text-sm font-bold mb-2">Ferramentas</label>
+                    <div class="flex gap-2 mb-2">
+                        <select id="tool-selector" class="input flex-1">
+                            <option value="">Adicionar ferramenta...</option>
+                            <!-- Populated via JS -->
+                        </select>
+                        <input type="number" id="tool-quantity" class="input w-20" value="1" min="1">
+                        <button type="button" id="add-item-btn" class="btn btn-secondary text-white"><i
+                                class="uil uil-plus"></i></button>
+                    </div>
+
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-gray-500 border-b">
+                                <th class="pb-2">Item</th>
+                                <th class="pb-2 w-16">Qtd</th>
+                                <th class="pb-2 w-24">Preço un.</th>
+                                <th class="pb-2 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="rental-items-list">
+                            <!-- Items added dynamically -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="border-t">
+                                <td colspan="2" class="pt-2 text-right font-bold">Total Estimado:</td>
+                                <td colspan="2" class="pt-2 font-bold text-primary" id="rental-total-display">R$ 0,00
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" class="btn btn-outline close-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Aluguel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </html>
