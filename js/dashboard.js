@@ -1,7 +1,8 @@
 
 import { supabase, handleError, checkAuth } from './supabase.js';
 import { logout } from './auth.js';
-import { renderRentals } from './rentals.js';
+import { renderRentals, handleManualRentalSubmit, loadRentalTools, setupRentalForm } from './rentals.js';
+import { renderClientsPage, handleClientSubmit } from './clients.js';
 
 let currentUser = null;
 let currentTab = 'overview';
@@ -276,6 +277,7 @@ function setupNavigation() {
             if (tab === 'overview') loadStats();
             else if (tab === 'rentals') renderRentals();
             else if (tab === 'tools') renderToolsPage();
+            else if (tab === 'clients') renderClientsPage();
             else document.getElementById('content-area').innerHTML = '<p class="text-muted">Em desenvolvimento...</p>';
         });
     });
@@ -288,6 +290,13 @@ function setupNavigation() {
     });
 
     document.getElementById('logout-btn').addEventListener('click', logout);
+
+    // Form handlers
+    document.getElementById('client-form').addEventListener('submit', handleClientSubmit);
+    document.getElementById('manual-rental-form').addEventListener('submit', handleManualRentalSubmit);
+
+    // Init Rental Form logic (listeners for calc)
+    setupRentalForm();
 }
 
 // Init
@@ -296,6 +305,7 @@ async function init() {
     if (currentUser) {
         setupNavigation();
         await loadCategories();
+        await loadRentalTools(); // Preload tools for rental form
         loadStats(); // Default
     }
 }
