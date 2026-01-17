@@ -92,7 +92,7 @@ async function renderToolsPage() {
     container.innerHTML = `
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold">Gerenciar Ferramentas</h3>
-            <button id="add-tool-btn" class="btn btn-success text-white">
+            <button id="add-tool-btn" class="btn btn-primary text-white">
                 <i class="uil uil-plus"></i> Nova Ferramenta
             </button>
         </div>
