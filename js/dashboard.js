@@ -262,8 +262,156 @@ async function deleteTool(id) {
     }
 }
 
+// --- Settings & Coupons Logic ---
 
-// Navigation
+async function renderSettingsPage() {
+    const container = document.getElementById('content-area');
+    container.innerHTML = `
+        <h3 class="text-xl font-bold mb-6">Configurações</h3>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- General Settings -->
+            <div class="card p-6 h-fit">
+                <h4 class="font-bold text-lg mb-4 border-b pb-2">Geral</h4>
+                <form id="settings-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Nome da Empresa</label>
+                        <input type="text" id="setting-company-name" class="input" placeholder="Minha Locadora">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">WhatsApp (com DDD, apenas números)</label>
+                        <input type="text" id="setting-whatsapp" class="input" placeholder="5511999999999">
+                        <p class="text-xs text-muted mt-1">Este número será usado no botão de checkout.</p>
+                    </div>
+                    <div class="pt-2">
+                        <button type="submit" class="btn btn-primary w-full">Salvar Configurações</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Coupons Management -->
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h4 class="font-bold text-lg">Cupons de Desconto</h4>
+                    <button id="add-coupon-btn" class="btn btn-primary btn-sm text-xs text-white"><i class="uil uil-plus"></i> Novo</button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-50 text-gray-500">
+                            <tr>
+                                <th class="p-2">Código</th>
+                                <th class="p-2">Desconto</th>
+                                <th class="p-2 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coupons-list" class="divide-y">
+                            <tr><td colspan="3" class="p-4 text-center">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Load Data
+    await loadSettingsData();
+    await renderCouponsTable();
+
+    // Listeners
+    document.getElementById('settings-form').addEventListener('submit', saveSettings);
+    document.getElementById('add-coupon-btn').addEventListener('click', () => {
+        document.getElementById('coupon-form').reset();
+        document.getElementById('coupon-modal').classList.add('open');
+    });
+}
+
+async function loadSettingsData() {
+    try {
+        const { data, error } = await supabase.from('settings').select('*').single();
+        if (error && error.code !== 'PGRST116') throw error;
+
+        if (data) {
+            document.getElementById('setting-company-name').value = data.company_name || '';
+            document.getElementById('setting-whatsapp').value = data.whatsapp_number || '';
+        }
+    } catch (error) {
+        console.error('Error loading settings:', error);
+    }
+}
+
+async function saveSettings(e) {
+    e.preventDefault();
+    const company_name = document.getElementById('setting-company-name').value;
+    const whatsapp_number = document.getElementById('setting-whatsapp').value;
+    const btn = e.target.querySelector('button');
+
+    const originalText = btn.innerText;
+    btn.innerText = 'Salvando...';
+    btn.disabled = true;
+
+    try {
+        // Check existing
+        const { data: existing } = await supabase.from('settings').select('id').limit(1).single();
+
+        let error;
+        if (existing) {
+            ({ error } = await supabase.from('settings').update({ company_name, whatsapp_number }).eq('id', existing.id));
+        } else {
+            ({ error } = await supabase.from('settings').insert([{ company_name, whatsapp_number }]));
+        }
+
+        if (error) throw error;
+        alert('Configurações salvas!');
+    } catch (error) {
+        handleError(error, 'Saving Settings');
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function renderCouponsTable() {
+    const tbody = document.getElementById('coupons-list');
+    if (!tbody) return;
+
+    try {
+        const { data, error } = await supabase.from('coupons').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-muted">Nenhum cupom ativo.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(c => `
+            <tr>
+                <td class="p-2 font-bold text-primary">${c.code}</td>
+                <td class="p-2">${c.discount_type === 'percent' ? c.discount_value + '%' : 'R$ ' + c.discount_value}</td>
+                <td class="p-2 text-right">
+                    <button class="text-red-500 hover:text-red-700 delete-coupon-btn" data-id="${c.id}"><i class="uil uil-trash-alt"></i></button>
+                </td>
+            </tr>
+        `).join('');
+
+        document.querySelectorAll('.delete-coupon-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                if (!confirm('Excluir este cupom?')) return;
+                const id = e.currentTarget.dataset.id;
+                await supabase.from('coupons').delete().eq('id', id);
+                renderCouponsTable();
+            });
+        });
+
+    } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="3" class="p-2 text-red-500">Erro ao carregar.</td></tr>';
+        console.error(error);
+    }
+}
+
+
+// --- Navigation & Init ---
+
 function setupNavigation() {
     const links = document.querySelectorAll('.sidebar-link[data-tab]');
     links.forEach(link => {
@@ -282,6 +430,7 @@ function setupNavigation() {
             else if (tab === 'rentals') renderRentals();
             else if (tab === 'tools') renderToolsPage();
             else if (tab === 'clients') renderClientsPage();
+            else if (tab === 'settings') renderSettingsPage();
             else document.getElementById('content-area').innerHTML = '<p class="text-muted">Em desenvolvimento...</p>';
         });
     });
@@ -303,28 +452,22 @@ function setupNavigation() {
     const categoryModal = document.getElementById('category-modal');
     const categoryForm = document.getElementById('category-form');
 
-    // Open Category Modal
     document.getElementById('open-category-modal-btn')?.addEventListener('click', () => {
         categoryForm.reset();
         categoryModal.classList.add('open');
     });
 
-    // Close Category Modal (custom close buttons)
     document.querySelectorAll('.close-modal-category').forEach(btn => {
         btn.addEventListener('click', () => {
             categoryModal.classList.remove('open');
         });
     });
 
-    // Slugify helper
+    // Strategy Pattern for slugify? Simple function is fine.
     const slugify = text => text.toString().toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .trim()
-        .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-');
+        .trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-');
 
-    // Handle Category Submit
     categoryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('new-category-name').value;
@@ -337,28 +480,49 @@ function setupNavigation() {
 
         try {
             const { data, error } = await supabase.from('categories').insert([{ name, slug }]).select();
-
             if (error) {
-                // Handle duplicate slug manually if needed, usually constraint error
                 if (error.code === '23505') throw new Error('Categoria já existe.');
                 throw error;
             }
-
-            // Success
             const newCategory = data[0];
             await loadCategories(newCategory.id);
             categoryModal.classList.remove('open');
-            // Optional: Show toast or alert
         } catch (error) {
-            alert('Erro ao salvar categoria: ' + error.message);
-            console.error(error);
+            alert('Erro: ' + error.message);
         } finally {
             btn.innerText = originalText;
             btn.disabled = false;
         }
     });
 
-    // Init Rental Form logic (listeners for calc)
+    // Coupon Logic
+    const couponModal = document.getElementById('coupon-modal');
+    const couponForm = document.getElementById('coupon-form');
+
+    document.querySelectorAll('.close-modal-coupon').forEach(btn => {
+        btn.addEventListener('click', () => {
+            couponModal.classList.remove('open');
+        });
+    });
+
+    couponForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const code = document.getElementById('coupon-code').value.toUpperCase();
+        const discount_type = document.getElementById('coupon-type').value;
+        const discount_value = parseFloat(document.getElementById('coupon-value').value);
+
+        try {
+            const { error } = await supabase.from('coupons').insert([{ code, discount_type, discount_value }]);
+            if (error) throw error;
+            couponModal.classList.remove('open');
+            renderCouponsTable();
+            alert('Cupom criado com sucesso!');
+        } catch (error) {
+            handleError(error, 'Creating Coupon');
+        }
+    });
+
+    // Init Rental Form logic
     setupRentalForm();
 }
 
@@ -368,8 +532,8 @@ async function init() {
     if (currentUser) {
         setupNavigation();
         await loadCategories();
-        await loadRentalTools(); // Preload tools for rental form
-        loadStats(); // Default
+        await loadRentalTools();
+        loadStats();
     }
 }
 
