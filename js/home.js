@@ -1,5 +1,5 @@
 
-import { supabase, handleError } from './supabase.js';
+import { supabase, handleError, escapeHtml } from './supabase.js';
 import { addToCart } from './cart.js';
 
 let allTools = [];
@@ -57,7 +57,7 @@ function renderCategories() {
         const btn = document.createElement('button');
         btn.className = 'btn btn-outline category-filter whitespace-nowrap';
         btn.dataset.id = cat.id;
-        btn.textContent = cat.name;
+        btn.textContent = cat.name; // textContent is safe
         categoriesContainer.appendChild(btn);
     });
 }
@@ -82,16 +82,16 @@ function renderTools() {
 
     grid.innerHTML = filtered.map(tool => `
         <div class="card flex flex-col h-full">
-            <img src="${tool.image_url || 'https://placehold.co/400x300?text=Sem+Imagem'}" alt="${tool.name}" class="card-image">
+            <img src="${tool.image_url || 'https://placehold.co/400x300?text=Sem+Imagem'}" alt="${escapeHtml(tool.name)}" class="card-image">
             <div class="card-content flex-1">
                 <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-semibold text-primary bg-blue-50 px-2 py-1 rounded">${tool.categories?.name || 'Geral'}</span>
+                    <span class="text-xs font-semibold text-primary bg-blue-50 px-2 py-1 rounded">${escapeHtml(tool.categories?.name || 'Geral')}</span>
                     <span class="badge ${tool.stock_available > 0 ? 'badge-success' : 'badge-danger'}">
                         ${tool.stock_available > 0 ? 'Disponível' : 'Indisponível'}
                     </span>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-1">${tool.name}</h3>
-                <p class="text-sm text-gray-500 line-clamp-2">${tool.description || ''}</p>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">${escapeHtml(tool.name)}</h3>
+                <p class="text-sm text-gray-500 line-clamp-2">${escapeHtml(tool.description || '')}</p>
             </div>
             <div class="card-footer">
                 <div>

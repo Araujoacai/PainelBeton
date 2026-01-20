@@ -21,3 +21,14 @@ export function handleError(error, context = '') {
     console.error(`Error in ${context}:`, error);
     alert(`Erro: ${error.message || 'Ocorreu um erro inesperado.'}`);
 }
+
+// XSS Sanitization Helper
+export function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    return text.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
