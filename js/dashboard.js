@@ -8,12 +8,16 @@ let currentUser = null;
 let currentTab = 'overview';
 
 // Logic to load Categories for Select
-async function loadCategories() {
+async function loadCategories(selectedId = null) {
     try {
-        const { data, error } = await supabase.from('categories').select('*');
+        const { data, error } = await supabase.from('categories').select('*').order('name');
         if (error) throw error;
         const select = document.getElementById('tool-category');
-        select.innerHTML = data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        select.innerHTML = '<option value="">Selecione...</option>' + data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+        if (selectedId) {
+            select.value = selectedId;
+        }
     } catch (e) { console.error(e); }
 }
 
@@ -294,6 +298,65 @@ function setupNavigation() {
     // Form handlers
     document.getElementById('client-form').addEventListener('submit', handleClientSubmit);
     document.getElementById('manual-rental-form').addEventListener('submit', handleManualRentalSubmit);
+
+    // Category Modal Logic
+    const categoryModal = document.getElementById('category-modal');
+    const categoryForm = document.getElementById('category-form');
+
+    // Open Category Modal
+    document.getElementById('open-category-modal-btn')?.addEventListener('click', () => {
+        categoryForm.reset();
+        categoryModal.classList.add('open');
+    });
+
+    // Close Category Modal (custom close buttons)
+    document.querySelectorAll('.close-modal-category').forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryModal.classList.remove('open');
+        });
+    });
+
+    // Slugify helper
+    const slugify = text => text.toString().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-');
+
+    // Handle Category Submit
+    categoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('new-category-name').value;
+        const slug = slugify(name);
+
+        const btn = categoryForm.querySelector('button[type="submit"]');
+        const originalText = btn.innerText;
+        btn.innerText = 'Salvando...';
+        btn.disabled = true;
+
+        try {
+            const { data, error } = await supabase.from('categories').insert([{ name, slug }]).select();
+
+            if (error) {
+                // Handle duplicate slug manually if needed, usually constraint error
+                if (error.code === '23505') throw new Error('Categoria já existe.');
+                throw error;
+            }
+
+            // Success
+            const newCategory = data[0];
+            await loadCategories(newCategory.id);
+            categoryModal.classList.remove('open');
+            // Optional: Show toast or alert
+        } catch (error) {
+            alert('Erro ao salvar categoria: ' + error.message);
+            console.error(error);
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    });
 
     // Init Rental Form logic (listeners for calc)
     setupRentalForm();

@@ -84,13 +84,19 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Categoria</label>
-                    <select id="tool-category" class="input" required>
-                        <!-- Populated by JS -->
-                    </select>
+                    <div class="flex gap-2">
+                        <select id="tool-category" class="input flex-1" required>
+                            <!-- Populated by JS -->
+                        </select>
+                        <button type="button" id="open-category-modal-btn" class="btn btn-secondary text-white"
+                            title="Nova Categoria">
+                            <i class="uil uil-plus"></i>
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Preço Diária (R$)</label>
-                    <input type="number" id="tool-price" class="input" steps="0.01" required>
+                    <input type="number" id="tool-price" class="input" step="0.01" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Estoque</label>
@@ -105,6 +111,27 @@
                 <div class="flex justify-end gap-2 mt-4">
                     <button type="button" class="btn btn-outline close-modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Category Modal -->
+    <div id="category-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Nova Categoria</h3>
+                <button class="close-modal-category text-gray-400 hover:text-gray-600"><i
+                        class="uil uil-times text-xl"></i></button>
+            </div>
+            <form id="category-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome da Categoria</label>
+                    <input type="text" id="new-category-name" class="input" required placeholder="Ex: Elétricas">
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" class="btn btn-outline close-modal-category">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar Categoria</button>
                 </div>
             </form>
         </div>
